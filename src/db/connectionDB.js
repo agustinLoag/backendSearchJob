@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 require('dotenv').config({ path: '.env' })
 // Url de la db local
-const urlDB = process.env.DB_URI
+const urlDB = process.env.DB_URI_DOCKER
 
 //Conectar a la BD
 const connectDB = async () => {

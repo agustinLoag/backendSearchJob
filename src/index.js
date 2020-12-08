@@ -12,9 +12,12 @@ function server() {
     resolvers,
   })
 
-  serverApollo.listen().then(({ url }) => {
-    console.log(`Servidor listo en la url ${url}`)
-  })
+  serverApollo
+    .listen()
+    .then(({ url }) => {
+      console.log(`Servidor listo en la url ${url}`)
+    })
+    .catch(err => console.error('Error en la bd', err))
 }
 
 server()
