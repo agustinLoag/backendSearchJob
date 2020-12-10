@@ -3,20 +3,13 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const vacanteSchema = new Schema({
-  Titulo: { type: String },
-  Estado: { type: String, trim: true },
-  Ubicacion: { type: String },
-  Renta_Maxima: { type: String, trim: true },
-  Descripcion: { type: String, trim: true },
-
-  Preguntas: [
-    {
-      pregunta: String,
-      Tipo: String,
-      Respuesta: [String],
-    },
-  ],
-  Encargado: { type: String, trim: true },
+  titulo: { type: String },
+  estado: { type: String, trim: true },
+  ubicacion: { type: String },
+  renta_Maxima: { type: Number, trim: true },
+  descripcion: { type: String, trim: true },
+  preguntas: [{ type: String, trim: true }],
+  encargado: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
 })
 
 const VacanteModel = mongoose.model('Vacante', vacanteSchema)
