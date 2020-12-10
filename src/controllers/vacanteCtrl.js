@@ -27,18 +27,7 @@ async function getVacanteById(id) {
 
 async function createVacante(input) {
   console.log(input)
-  const {
-    titulo,
-    estado,
-    ubicacion,
-    renta_Maxima,
-    descripcion,
-    preguntas,
-    encargado,
-  } = input
-
   const newVacante = input
-
   try {
     const vacante = new VacanteModel(newVacante)
     vacante.save()

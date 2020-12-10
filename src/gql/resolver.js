@@ -22,6 +22,13 @@ const {
   updatePerfil,
   deletePerfil,
 } = require('../controllers/perfilCtrl')
+const {
+  createPostulantes,
+  updatePostulantes,
+  deletePostulantes,
+  getAllPostulantes,
+  getPostulantesByID,
+} = require('../controllers/postulantesCtrl')
 
 const resolver = {
   Query: {
@@ -34,6 +41,9 @@ const resolver = {
     //Perfiles
     getPerfiles: _ => getAllPerfiles(),
     getPerfilID: (_, { id }) => getPerfileByID(id),
+    //Postulantes
+    getPostulantes: () => getAllPostulantes(),
+    getPostulantesID: (_, { id }) => getPostulantesByID(id),
   },
 
   Vacante: {
@@ -42,6 +52,7 @@ const resolver = {
   },
 
   Mutation: {
+    //Usuarios
     login: async (_, { input }) => loginUser(input),
     logout: async (_, { input }) => logoutUser(input),
     registroUsuarios: async (_, { input }) => registrarUsuario(input),
@@ -53,8 +64,12 @@ const resolver = {
     eliminarVacante: async (_, { id }) => deleteVacante(id),
     //Perfiles
     registroPerfiles: async (_, { input }) => createPerfil(input),
-
     eliminarPerfil: async (_, { id }) => deletePerfil(id),
+    //Postulantes
+    registroPostulantes: async (_, { input }) => createPostulantes(input),
+    actualizarPostulante: async (_, { input, id }) =>
+      updatePostulantes(input, id),
+    eliminarPostulante: async (_, { id }) => deletePostulantes(id),
   },
 }
 

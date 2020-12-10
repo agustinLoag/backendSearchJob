@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server')
 
 const typeDefs = gql`
+  #Tipos de Esquemas
   type Usuario {
     id: ID
     rol: String
@@ -18,11 +19,38 @@ const typeDefs = gql`
     preguntas: [Pregunta]
     encargado: Usuario!
   }
+  type Postulantes {
+    id: ID!
+    vacante_Id: Vacante!
+    estado: String
+    nombre: String
+    numero: String
+    renta_Esperada: Float
+    respuestas: [Respuestas]
+    cv: String
+    notas: [Notas]
+    video_Results: [Video_Results]
+  }
 
   type Pregunta {
     pregunta: String
     tipo: String
     respuesta: [String]
+  }
+
+  type Respuestas {
+    pregunta: String
+    respuesta: String
+  }
+
+  type Notas {
+    mensaje: String
+    user: ID
+    hora: String
+  }
+  type Video_Results {
+    vote: Boolean
+    user: ID
   }
 
   type Perfil {
@@ -61,13 +89,24 @@ const typeDefs = gql`
   }
 
   #Vacantes
+  input PreguntaInput {
+    pregunta: String
+    tipo: String
+    respuesta: [String]
+  }
+
+  input ActualizarPreguntaInput {
+    pregunta: String
+    tipo: String
+    respuesta: [String]
+  }
   input VacanteInput {
     titulo: String!
     estado: String!
     ubicacion: String!
     renta_Maxima: Float
     descripcion: String!
-    preguntas: [String]
+    preguntas: [PreguntaInput]
     encargado: ID
   }
 
@@ -77,7 +116,7 @@ const typeDefs = gql`
     ubicacion: String
     renta_Maxima: Float
     descripcion: String
-    preguntas: [String]
+    preguntas: [ActualizarPreguntaInput]
     encargado: ID
   }
 
@@ -101,6 +140,41 @@ const typeDefs = gql`
     nivel_Cargo: String
     video: String
   }
+  #Postulantes
+
+  input NotasInput {
+    mensaje: String
+    user: ID
+    hora: String
+  }
+
+  input Video_ResultsInput {
+    vote: Boolean
+    user: ID
+  }
+
+  input RespuestasInput {
+    pregunta: String
+    respuesta: String
+  }
+
+  input PostulanteInput {
+    vacante_Id: ID!
+    estado: String
+    nombre: String
+    numero: String
+    renta_Esperada: Float
+    respuestas: RespuestasInput
+    cv: String
+    notas: [NotasInput]
+    video_Results: [Video_ResultsInput]
+  }
+
+  input ActualizarPostulanteInput {
+    cv: String
+    notas: [NotasInput]
+    video_Results: [Video_ResultsInput]
+  }
   ##CONEXION con el resolver
 
   type Query {
@@ -110,6 +184,8 @@ const typeDefs = gql`
     getVacanteID(id: ID!): Vacante
     getUsuarioID(id: ID): Usuario
     getPerfilID(id: ID): Perfil
+    getPostulantes: [Postulantes]
+    getPostulantesID(id: ID): Postulantes
   }
 
   type Mutation {
@@ -125,8 +201,11 @@ const typeDefs = gql`
     eliminarVacante(id: ID!): Boolean
     #Perfiles
     registroPerfiles(input: PerfilInput): Perfil
-
     eliminarPerfil(id: ID!): Boolean
+    #Postulantes
+    registroPostulantes(input: PostulanteInput): Postulantes
+    actualizarPostulante(id: ID!, input: ActualizarPostulanteInput): Postulantes
+    eliminarPostulante(id: ID!): Boolean
   }
 `
 

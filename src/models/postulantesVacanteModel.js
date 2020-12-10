@@ -7,8 +7,8 @@ const postulantesVacanteSchema = new Schema({
   estado: { type: String, require: true, trim: true, unique: true },
   nombre: { type: String, require: true, unique: true },
   numero: { type: String, trim: true },
-  renta_Esperada: { type: String, trim: true },
-  respuestas: { type: String, trim: true },
+  renta_Esperada: { type: Number, trim: true },
+  respuestas: [{ pregunta: String, respuesta: String }],
   cv: { type: String },
   video: { type: String, trim: true },
   notas: [

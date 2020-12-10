@@ -8,7 +8,7 @@ const vacanteSchema = new Schema({
   ubicacion: { type: String },
   renta_Maxima: { type: Number, trim: true },
   descripcion: { type: String, trim: true },
-  preguntas: [{ type: String, trim: true }],
+  preguntas: [{ pregunta: String, tipo: String, respuesta: [String] }],
   encargado: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
 })
 
