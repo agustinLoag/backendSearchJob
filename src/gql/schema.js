@@ -1,212 +1,217 @@
-const { gql } = require('apollo-server')
-
+import apollo from 'apollo-server'
+const { gql } = apollo
 const typeDefs = gql`
-  #Tipos de Esquemas
-  type Usuario {
+  ##  ======================  ##
+  ##        Tipos
+  ##  ======================  ##
+  type Users {
     id: ID
-    rol: String
+    name: String
+    role: String
     mail: String
-    contrasena: String
-    empresa: String
+    password: String
+    company: String
   }
-  type Vacante {
-    id: ID!
-    titulo: String!
-    estado: String!
-    ubicacion: String!
-    renta_Maxima: Float
-    descripcion: String!
-    preguntas: [Pregunta]
-    encargado: Usuario!
+  type WSP {
+    id: ID
+    body: String
+    to: String
+    from: String
   }
-  type Postulantes {
+  type Vacancy {
     id: ID!
-    vacante_Id: Vacante!
-    estado: String
-    nombre: String
-    numero: String
-    renta_Esperada: Float
-    respuestas: [Respuestas]
-    cv: String
-    notas: [Notas]
+    title: String!
+    state: String!
+    location: String!
+    maximun_rent: Float
+    description: String!
+    supervisor: Users!
+    createdBy: Users!
+  }
+  type Candidates {
+    id: ID!
+    vacancy_Id: Vacancy
+    state: String
+    name: String
+    telephone: String
+    expected_income: Float
+    cv_Link: String
+    video_Link: String
     video_Results: [Video_Results]
   }
-
-  type Pregunta {
-    pregunta: String
-    tipo: String
-    respuesta: [String]
-  }
-
-  type Respuestas {
-    pregunta: String
-    respuesta: String
-  }
-
-  type Notas {
-    mensaje: String
-    user: ID
-    hora: String
-  }
   type Video_Results {
-    vote: Boolean
-    user: ID
+    vote: String
+    user: Users
   }
-
-  type Perfil {
+  type Profile {
     id: ID!
-    telefono: String
-    sueldo: Float
-    cV: String
+    telephone: String
+    salary: Float
+    cv_Link: Upload
     area: String
-    palabras_Clave: [String]
-    nivel_Cargo: String
-    video: String
+    keywords: [String]
+    charge_level: String
   }
-
+  type Questions {
+    question: String
+    type: String
+    answers: [String]
+    vacancyID: Vacancy
+  }
+  type Answers {
+    userID: Users
+    questionID: Questions
+    answer: String
+  }
+  type Notes {
+    note: String
+    candidate: ID
+    createdBy: ID
+    vacancyId: ID
+  }
   type Token {
     token: String
   }
-
-  ##Inputs para REALIZAR LAS PETICIONES PUT,PATCH,DELETE
-  ##Usuarios
+  ##  ======================  ##
+  ##        Inputs
+  ##  ======================  ##
+  ##  USUARIOS
   input LoginInput {
     email: String!
     password: String!
   }
-
-  input UsuarioInput {
-    rol: String!
+  input UsersInput {
+    name: String
+    role: String!
     mail: String!
-    contrasena: String
-    empresa: String
+    password: String
+    company: String
   }
-
-  input ActulizarUsuarioInput {
-    rol: String
+  input UpdateUserInput {
+    role: String
     mail: String
-    empresa: String
+    company: String
   }
-
-  #Vacantes
-  input PreguntaInput {
-    pregunta: String
-    tipo: String
-    respuesta: [String]
+  #   VACANTES
+  input QuestionInput {
+    question: String
+    type: String
+    answer: [String]
   }
-
-  input ActualizarPreguntaInput {
-    pregunta: String
-    tipo: String
-    respuesta: [String]
+  input UpdateQuestionInput {
+    question: String
+    type: String
+    answer: [String]
   }
-  input VacanteInput {
-    titulo: String!
-    estado: String!
-    ubicacion: String!
-    renta_Maxima: Float
-    descripcion: String!
-    preguntas: [PreguntaInput]
-    encargado: ID
+  input VacancyInput {
+    title: String!
+    state: String!
+    location: String!
+    maximun_rent: Float
+    description: String!
+    supervisor: ID
+    createdBy: ID
+    questions: [QuestionInput]
   }
-
-  input ActualizarVacanteInput {
-    titulo: String
-    estado: String
-    ubicacion: String
-    renta_Maxima: Float
-    descripcion: String
-    preguntas: [ActualizarPreguntaInput]
-    encargado: ID
+  input UpdateVacancyInput {
+    title: String
+    state: String
+    location: String
+    maximun_rent: Float
+    description: String
+    supervisor: ID
+    createdBy: ID
   }
-
-  #Perfiles
-  input PerfilInput {
-    telefono: String
-    sueldo: Float
-    cV: String
+  #   PERFILES
+  input ProfileInput {
+    telephone: String
+    salary: Float
+    cv_Link: String
     area: String
-    palabras_Clave: [String]
-    nivel_Cargo: String
-    video: String
+    keywords: [String]
+    charge_level: String
   }
-
-  input ActualizarPerfilInput {
-    telefono: String
-    sueldo: Float
-    cV: String
+  input UpdateProfileInput {
+    telephone: String
+    salary: Float
+    cv_Link: String
     area: String
-    palabras_Clave: [String]
-    nivel_Cargo: String
-    video: String
+    keywords: [String]
+    charge_level: String
   }
-  #Postulantes
-
-  input NotasInput {
-    mensaje: String
-    user: ID
-    hora: String
+  input NotesInput {
+    note: String
+    candidate: ID
+    createdBy: ID
+    vacancyId: ID
   }
-
   input Video_ResultsInput {
-    vote: Boolean
+    vote: String
     user: ID
   }
-
-  input RespuestasInput {
-    pregunta: String
-    respuesta: String
+  input AnswersInput {
+    userID: ID
+    questionID: ID
+    answer: String
   }
-
-  input PostulanteInput {
-    vacante_Id: ID!
-    estado: String
-    nombre: String
-    numero: String
-    renta_Esperada: Float
-    respuestas: RespuestasInput
-    cv: String
-    notas: [NotasInput]
+  input CandidateInput {
+    vacancy_Id: ID!
+    state: String
+    name: String
+    telephone: String
+    expected_income: Float
+    cv_Link: String
+    video_Link: String
     video_Results: [Video_ResultsInput]
   }
-
-  input ActualizarPostulanteInput {
-    cv: String
-    notas: [NotasInput]
-    video_Results: [Video_ResultsInput]
+  input UpdateCandidateInput {
+    notes: [NotesInput]
   }
-  ##CONEXION con el resolver
 
+  ##  USUARIOS
+  input WSPInput {
+    to: String
+  }
+
+  ##  ======================  ##
+  ##    CONEXION con el resolver
+  ##  ======================  ##
   type Query {
-    getUsuarios: [Usuario]
-    getVacantes: [Vacante]
-    getPerfiles: [Perfil]
-    getVacanteID(id: ID!): Vacante
-    getUsuarioID(id: ID): Usuario
-    getPerfilID(id: ID): Perfil
-    getPostulantes: [Postulantes]
-    getPostulantesID(id: ID): Postulantes
+    getUsers: [Users]
+    getUserID(id: ID): Users
+    getVacancies(state: String, search: String): [Vacancy]
+    getVacancyID(id: ID!): Vacancy
+    getProfiles: [Profile]
+    getProfileID(id: ID): Profile
+    getCandidates: [Candidates]
+    getCandidateID(id: ID): Candidates
+    getCandidatesVacancy(
+      id: ID
+      state: String
+      search: String
+      renta: Float
+    ): [Candidates]
+    getHistoryVacancies(name: String): [Candidates]
   }
-
   type Mutation {
     #Usuarios
-    registroUsuarios(input: UsuarioInput): Usuario
-    eliminarUsuario(id: ID!): Boolean
-    actualizarUsuario(id: ID!, input: ActulizarUsuarioInput): Usuario
+    registerUsers(input: UsersInput): Users
+    updateUser(id: ID!, input: UpdateUserInput): Users
+    deleteUser(id: ID!): Boolean
     login(input: LoginInput): Token
-    logout(input: LoginInput): Token
+
     #Vacantes
-    registroVacantes(input: VacanteInput): Vacante
-    actualizarVacante(id: ID!, input: ActualizarVacanteInput): Vacante
-    eliminarVacante(id: ID!): Boolean
+    registerVacancy(input: VacancyInput): Vacancy
+    updateVacancy(id: ID!, input: UpdateVacancyInput): Vacancy
+    deleteVacancy(id: ID!): Boolean
     #Perfiles
-    registroPerfiles(input: PerfilInput): Perfil
-    eliminarPerfil(id: ID!): Boolean
-    #Postulantes
-    registroPostulantes(input: PostulanteInput): Postulantes
-    actualizarPostulante(id: ID!, input: ActualizarPostulanteInput): Postulantes
-    eliminarPostulante(id: ID!): Boolean
+    registerProfile(input: ProfileInput): Profile
+    deleteProfile(id: ID!): Boolean
+    #Candidatos o Postulantes
+    registerCandidate(input: CandidateInput): Candidates
+    deleteCandidate(id: ID!): Boolean
+    #Enviar el WSP
+    sendWhatsApp(input: WSPInput): Boolean
   }
 `
-
-module.exports = typeDefs
+export default typeDefs

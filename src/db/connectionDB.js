@@ -1,8 +1,8 @@
-const mongoose = require('mongoose')
-
-require('dotenv').config({ path: '.env' })
+import mongoose from 'mongoose'
+import dot from 'dotenv'
+const dotenv = dot.config()
 // Url de la db local
-const urlDB = process.env.DB_URI
+const urlDB = process.env.DB_ONLINE
 
 //Conectar a la BD
 const connectDB = async () => {
@@ -13,9 +13,7 @@ const connectDB = async () => {
     useFindAndModify: false,
   })
   if (!res) console.log("Error can't connect")
-  else {
-    console.log('DB Connected')
-  }
+  else console.log('DB Connected')
 }
 
-module.exports = connectDB
+export default connectDB

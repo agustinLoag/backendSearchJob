@@ -1,25 +1,20 @@
-const express = require('express')
-const { ApolloServer } = require('apollo-server-express')
-const cors = require('cors')
-const dotenv = require('dotenv')
-const bodyParser = require('body-parser')
+import express from 'express'
+import apollo from 'apollo-server-express'
+const { ApolloServer } = apollo
+import cors from 'cors'
+import dotenv from 'dotenv'
 //ARCHIVOS EXTERNOS
-const typeDefs = require('./gql/schema')
-const resolvers = require('./gql/resolver')
-const connectDB = require('./db/connectionDB')
+import typeDefs from './gql/schema.js'
+import resolvers from './gql/resolver.js'
+import connectDB from './db/connectionDB.js'
+import verifyUser from './helpers/verifyUser.js'
+
 //Configurar variables de entorno
 dotenv.config()
 //Inicializar express
 const app = express()
 
 //Middlewares
-
-// // parse application/x-www-form-urlencoded
-// app.use(bodyParser.urlencoded({ extended: false }))
-
-// // parse application/json
-// app.use(bodyParser.json())
-
 //Cors
 app.use(cors())
 //Body parser
@@ -30,6 +25,13 @@ connectDB()
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    const token = req.headers.authorization || ''
+    const user = await verifyUser(req)
+    return {
+      user,
+    }
+  },
 })
 
 //Visitar locahost:port/graphql para el PlayGround

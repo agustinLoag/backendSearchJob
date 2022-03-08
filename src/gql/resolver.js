@@ -1,76 +1,92 @@
-const {
+import graphql from 'graphql-resolvers'
+const { combineResolvers } = graphql
+import {
   loginUser,
-  logoutUser,
-  registrarUsuario,
-  getAllUsuarios,
-  getUsuariosByID,
-  deleteUsuarioByID,
-  updateUsuario,
-} = require('../controllers/usuariosController')
-const { usuarios, vacantes } = require('../data')
-const {
-  createVacante,
-  updateVacante,
-  getAllVacantes,
-  getVacanteById,
-  deleteVacante,
-} = require('../controllers/vacanteCtrl')
-const {
-  getAllPerfiles,
-  getPerfileByID,
-  createPerfil,
-  updatePerfil,
-  deletePerfil,
-} = require('../controllers/perfilCtrl')
-const {
-  createPostulantes,
-  updatePostulantes,
-  deletePostulantes,
-  getAllPostulantes,
-  getPostulantesByID,
-} = require('../controllers/postulantesCtrl')
+  createUser,
+  getAllUsers,
+  getUserByID,
+  deleteUserByID,
+  updateUser,
+} from '../controllers/userCtrl.js'
+
+import {
+  getAllVacancies,
+  getVacancyById,
+  createVacancy,
+  updateVacancy,
+  deleteVacancy,
+} from '../controllers/vacancyCtrl.js'
+import {
+  getAllProfiles,
+  getProfileByID,
+  createProfile,
+  deleteProfile,
+} from '../controllers/profileCtrl.js'
+import {
+  getAllCandidates,
+  getCandidateByID,
+  getCandidatesFromVacancy,
+  createCandidate,
+  deleteCandidate,
+  getHistory,
+} from '../controllers/candidateCtrl.js'
+import { isAuthenticated, hasSauronPermission } from '../middlewares/index.js'
+import sendWhatAppMessage from '../helpers/send-wsp.js'
 
 const resolver = {
   Query: {
     //Vacantes
-    getVacantes: () => getAllVacantes(),
-    getVacanteID: (_, { id }) => getVacanteById(id),
-    //Usuarios
-    getUsuarios: _ => getAllUsuarios(),
-    getUsuarioID: (_, { id }) => getUsuariosByID(id),
-    //Perfiles
-    getPerfiles: _ => getAllPerfiles(),
-    getPerfilID: (_, { id }) => getPerfileByID(id),
-    //Postulantes
-    getPostulantes: () => getAllPostulantes(),
-    getPostulantesID: (_, { id }) => getPostulantesByID(id),
-  },
+    //Busqueda con la autenticacion de JWT
+    // getVacancies: combineResolvers(
+    //   isAuthenticated,
+    //   (_, { state, search }, ctx) => getAllVacancies(state, search, ctx),
+    // ),
+    getVacancies: (_, { state, search }) => getAllVacancies(state, search),
 
-  Vacante: {
-    //Relazionar la Vacante con el encargado
-    encargado: ({ encargado }) => usuarios.find(user => user.id === encargado),
+    getVacancyID: (_, { id }) => getVacancyById(id),
+    //Usuarios
+    //Get users con JWT
+    // getUsers: combineResolvers(isAuthenticated, hasSauronPermission, (_, __) =>
+    //   getAllUsers(),
+    // ),
+    getUsers: (_, __) => getAllUsers(),
+
+    getUserID: combineResolvers(isAuthenticated, (_, { id }) =>
+      getUserByID(id),
+    ),
+    //Perfiles
+    getProfiles: combineResolvers(isAuthenticated, (_, __, ctx) =>
+      getAllProfiles(),
+    ),
+    getProfileID: (_, { id }) => getProfileByID(id),
+    //Postulantes
+    getCandidates: (_, { id }) => getAllCandidates(id),
+    getCandidateID: (_, { id }) => getCandidateByID(id),
+    getCandidatesVacancy: (_, { id, state, search, renta }) =>
+      getCandidatesFromVacancy(id, state, search, renta),
+    getHistoryVacancies: (_, { name }) => getHistory(name),
   },
 
   Mutation: {
     //Usuarios
     login: async (_, { input }) => loginUser(input),
-    logout: async (_, { input }) => logoutUser(input),
-    registroUsuarios: async (_, { input }) => registrarUsuario(input),
-    eliminarUsuario: async (_, { id }) => deleteUsuarioByID(id),
-    actualizarUsuario: async (_, { input, id }) => updateUsuario(input, id),
+
+    registerUsers: async (_, { input }) => createUser(input),
+    deleteUser: async (_, { id }) => deleteUserByID(id),
+    updateUser: async (_, { input, id }) => updateUser(input, id),
     //Vacantes
-    registroVacantes: async (_, { input }) => createVacante(input),
-    actualizarVacante: async (_, { input, id }) => updateVacante(input, id),
-    eliminarVacante: async (_, { id }) => deleteVacante(id),
+    registerVacancy: async (_, { input }) => createVacancy(input),
+    updateVacancy: async (_, { input, id }, ctx) => updateVacancy(input, id),
+    deleteVacancy: async (_, { id }) => deleteVacancy(id),
     //Perfiles
-    registroPerfiles: async (_, { input }) => createPerfil(input),
-    eliminarPerfil: async (_, { id }) => deletePerfil(id),
+    registerProfile: async (_, { input }, ctx) => createProfile(input, ctx),
+    deleteProfile: async (_, { id }) => deleteProfile(id),
     //Postulantes
-    registroPostulantes: async (_, { input }) => createPostulantes(input),
-    actualizarPostulante: async (_, { input, id }) =>
-      updatePostulantes(input, id),
-    eliminarPostulante: async (_, { id }) => deletePostulantes(id),
+    registerCandidate: async (_, { input }, ctx) => createCandidate(input),
+    deleteCandidate: async (_, { id }) => deleteCandidate(id),
+    //Enviar Whats App
+    sendWhatsApp: async (_, { input }) => sendWhatAppMessage(input),
   },
 }
 
-module.exports = resolver
+export default resolver
